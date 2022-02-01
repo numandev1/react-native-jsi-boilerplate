@@ -1,22 +1,36 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 
-const LINKING_ERROR =
-  `The package 'react-native-jsi-boilerplate' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo managed workflow\n';
-
-const JsiBoilerplate = NativeModules.JsiBoilerplate
-  ? NativeModules.JsiBoilerplate
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
-
-export function multiply(a: number, b: number): Promise<number> {
-  return JsiBoilerplate.multiply(a, b);
+function isLoaded() {
+  return typeof global?.helloWorld === 'function';
 }
+
+if (!isLoaded()) {
+  const result = NativeModules.JsiBoilerplate.install();
+  if (!result) {
+    throw new Error(
+      'JSI bindings were not installed for: JsiBoilerplate Module'
+    );
+  }
+
+  if (!isLoaded()) {
+    throw new Error(
+      'JSI bindings were not installed for: JsiBoilerplate Module'
+    );
+  }
+}
+
+//@ts-ignore
+let JsiBoilerplateModule: {
+  helloWorld(): string;
+  multiply(x: number, y: number): number;
+  multiplyWithCallback(
+    x: number,
+    y: number,
+    callback: (z: number) => void
+  ): void;
+  getDeviceName(): string;
+  setItem(key: string, value: string): boolean;
+  getItem(key: string): string;
+} = global;
+
+export default JsiBoilerplateModule;

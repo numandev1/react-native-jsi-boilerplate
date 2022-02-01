@@ -1,8 +1,13 @@
 package com.reactnativejsiboilerplate;
 
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
-import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -22,20 +27,44 @@ public class JsiBoilerplateModule extends ReactContextBaseJavaModule {
         return NAME;
     }
 
-    static {
-        try {
-            // Used to load the 'native-lib' library on application startup.
-            System.loadLibrary("cpp");
-        } catch (Exception ignored) {
-        }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean install() {
+    try {
+      Log.i(NAME, "Loading C++ library...");
+      System.loadLibrary("cpp");
+      JavaScriptContextHolder jsContext = getReactApplicationContext().getJavaScriptContextHolder();
+      nativeInstall(jsContext.get());
+      Log.i(NAME, "Successfully installed "+NAME+" JSI Bindings!");
+      return true;
+    } catch (Exception exception) {
+      Log.e(NAME, "Failed to install "+NAME+" JSI Bindings!", exception);
+      return false;
+    }
+  }
+
+   private static native void nativeInstall(long jsiPtr);
+
+    public String getModel() {
+      String manufacturer = Build.MANUFACTURER;
+      String model = Build.MODEL;
+      if (model.startsWith(manufacturer)) {
+        return model;
+      } else {
+        return manufacturer + " " + model;
+      }
     }
 
-    // Example method
-    // See https://reactnative.dev/docs/native-modules-android
-    @ReactMethod
-    public void multiply(int a, int b, Promise promise) {
-        promise.resolve(nativeMultiply(a, b));
-    }
+  public void setItem(final String key, final String value) {
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getReactApplicationContext());
+    SharedPreferences.Editor editor = preferences.edit();
+    editor.putString(key,value);
+    editor.apply();
+  }
 
-    public static native int nativeMultiply(int a, int b);
+  public String getItem(final String key) {
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getReactApplicationContext());
+    String value = preferences.getString(key, "");
+    return value;
+  }
 }

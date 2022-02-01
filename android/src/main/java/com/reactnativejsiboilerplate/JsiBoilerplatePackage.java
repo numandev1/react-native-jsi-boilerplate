@@ -26,3 +26,4 @@ public class JsiBoilerplatePackage implements ReactPackage {
         return Collections.emptyList();
     }
 }
+

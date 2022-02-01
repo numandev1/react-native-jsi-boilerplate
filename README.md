@@ -1,21 +1,49 @@
 # react-native-jsi-boilerplate
 
-react native JSI boilerplate
+<p align="center">
+<img src="/assets/boilerplateIcon.png" width="150"/>
+</p>
 
-## Installation
+<p align="center">
+  <img width="300" src="/assets/demo.png?raw=true">
+</p>
 
-```sh
-npm install react-native-jsi-boilerplate
-```
+This is just a boilerplate of JSI
+
+## Prerequisites
+You must have Android NDK and CMake installed on android to build the library.
+
+## Methods
+The following methods are implemented.
 
 ## Usage
 
 ```js
-import { multiply } from "react-native-jsi-boilerplate";
+import JsiBoilerplate from 'react-native-jsi-boilerplate';
 
 // ...
 
-const result = await multiply(3, 7);
+let helloWorld = JsiBoilerplate.helloWorld();
+
+//...
+
+let multipleResult = JsiBoilerplate.multiply(5, 6);
+
+//...
+
+JsiBoilerplate.multiplyWithCallback(5, 6, result => { });
+
+//...
+
+const deviceName = JsiBoilerplate.getDeviceName();
+
+//...
+
+JsiBoilerplate.setItem('test', 'test value');
+
+//...
+
+const result = JsiBoilerplate.getItem('test');
 ```
 
 ## Contributing

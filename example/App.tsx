@@ -1,115 +1,111 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
+import React, {useState} from 'react';
+import {StyleSheet, View, Text, Button, Dimensions} from 'react-native';
+import JsiBoilerplate from 'react-native-jsi-boilerplate';
+const {width, height} = Dimensions.get('screen');
 
-import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+function App() {
+  const [log, setLog] = useState();
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  const makeLog = (obj: any) => {
+    let logStr: string = '';
+    for (let [key, value] of Object.entries(obj)) {
+      logStr += `\n\n${key} : ${value}`;
+    }
+    setLog(logStr);
+  };
 
-const Section: React.FC<{
-  title: string;
-}> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+  const onInvokeHelloWorld = () => {
+    let perf = performance.now();
+    let helloWorld = JsiBoilerplate.helloWorld();
+    const performanceResult = performance.now() - perf;
+    makeLog({
+      performance: performanceResult,
+      helloWorld,
+    });
+  };
 
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const onInvokeMultiply = () => {
+    let perf = performance.now();
+    let multipleResult = JsiBoilerplate.multiply(5, 6);
+    const performanceResult = performance.now() - perf;
+    makeLog({
+      performance: performanceResult,
+      multipleResult,
+    });
+  };
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const onInvokeMultiplyWithCallback = () => {
+    let perf = performance.now();
+    JsiBoilerplate.multiplyWithCallback(5, 6, result => {
+      const performanceResult = performance.now() - perf;
+      makeLog({
+        performance: performanceResult,
+        result,
+      });
+    });
+  };
+
+  const onGetDeviceModal = () => {
+    let perf = performance.now();
+    const deviceName = JsiBoilerplate.getDeviceName();
+    const performanceResult = performance.now() - perf;
+    makeLog({
+      performance: performanceResult,
+      deviceName,
+    });
+  };
+
+  const onSetItemInvoke = () => {
+    let perf = performance.now();
+    JsiBoilerplate.setItem('test', 'test value');
+    const performanceResult = performance.now() - perf;
+    makeLog({
+      performance: performanceResult,
+      saved: 'true',
+    });
+  };
+
+  const onGetItemInvoke = () => {
+    let perf = performance.now();
+    const result = JsiBoilerplate.getItem('test');
+    const performanceResult = performance.now() - perf;
+    makeLog({
+      performance: performanceResult,
+      test: result,
+    });
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Text style={styles.textInput}>{log}</Text>
+      <Button title="call hello world function" onPress={onInvokeHelloWorld} />
+      <Button title="call multiply function" onPress={onInvokeMultiply} />
+      <Button
+        title="call multiply with callback function"
+        onPress={onInvokeMultiplyWithCallback}
+      />
+      <Button title="Get Device Name" onPress={onGetDeviceModal} />
+      <Button title="set Item function" onPress={onSetItemInvoke} />
+      <Button title="Get Item function" onPress={onGetItemInvoke} />
+    </View>
   );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+}
 
 export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  textInput: {
+    marginTop: 50,
+    marginBottom: 15,
+    height: height * 0.4,
+    width: width * 0.9,
+    borderColor: 'gray',
+    borderWidth: 5,
+    fontSize: 20,
+    padding: 15,
+  },
+});
